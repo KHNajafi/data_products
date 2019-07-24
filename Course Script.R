@@ -57,3 +57,19 @@ mini_UI_example <- function(n1, n2) {
         # Compiling app
         runGadget(ui, server)
 }
+
+
+
+
+#### Plotly Example ####
+require(plotly)
+# We do this to make it easier for plotly to infer properties of the vis
+mtcars2 <- mtcars %>%
+        mutate(vehicle = row.names(mtcars),
+               cyl_f = as.factor(cyl))
+plot_ly(mtcars, x = ~hp, y = ~disp, type = "scatter")
+plot_ly(mtcars2, x = ~hp, y = ~disp, type = "scatter", color = ~cyl_f)
+#3D scatter
+plot_ly(mtcars2, x = ~disp, y = ~mpg, z = ~wt, type = "scatter3d", color = ~hp)
+plot_ly(mtcars2, x = ~vehicle, y = ~hp, type = "bar", color = ~disp)
+
