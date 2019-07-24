@@ -61,7 +61,9 @@ mini_UI_example <- function(n1, n2) {
 
 
 
-#### Plotly Example ####
+#### Plotly Code Examples ####
+
+#### >>>> Scatterplots ####
 require(plotly)
 # We do this to make it easier for plotly to infer properties of the vis
 mtcars2 <- mtcars %>%
@@ -73,3 +75,28 @@ plot_ly(mtcars2, x = ~hp, y = ~disp, type = "scatter", color = ~cyl_f)
 plot_ly(mtcars2, x = ~disp, y = ~mpg, z = ~wt, type = "scatter3d", color = ~hp)
 plot_ly(mtcars2, x = ~vehicle, y = ~hp, type = "bar", color = ~disp)
 
+
+#### >>>> Lines ####
+require(quantmod)
+#Download stock price data for Apple `AAPL` for 2019 year-to-date
+getSymbols("AAPL", src = "yahoo", from = date("2019-01-01"), to = date("2019-07-01"))
+#Convert the timeseries into a dataframe
+AAPL_data <- as.data.frame(AAPL) %>%
+        as.tbl() %>%
+        mutate(time = time(AAPL))
+
+require(plotly)
+plot_ly(AAPL_data, x = ~time, y = ~AAPL.Close, linetype = "dash")
+
+
+#### >>>> Distributions ####
+
+#### +-------> Histograms ####
+plot_ly(AAPL_data, x = ~AAPL.High)
+
+
+#### +-------> Box Plots ####
+plot_ly(AAPL_data, y = ~AAPL.Open, type = "box")
+
+#### +-------> Heatmaps & Surface (3D) ####
+plot_ly(AAPL_data, x = ~AAPL.High, y = ~AAPL.Low, z = ~AAPL.Close, type = "surface")
