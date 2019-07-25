@@ -100,3 +100,33 @@ plot_ly(AAPL_data, y = ~AAPL.Open, type = "box")
 
 #### +-------> Heatmaps & Surface (3D) ####
 plot_ly(AAPL_data, x = ~AAPL.High, y = ~AAPL.Low, z = ~AAPL.Close, type = "surface")
+
+
+
+
+#### Leaflet Code Examples ####
+require(leaflet)
+
+## Basic Map Code Examples
+
+#Map canvas
+maps <- leaflet() %>%
+        addTiles()
+
+# Toronto (Major) Sporting Venues
+arenas <- data.frame(lat = c(43.64348,
+                             43.6416,
+                             43.63320,
+                             43.66220),
+                     lng = c(-79.37869,
+                             -79.3892,
+                             -79.41852,
+                             -79.38030),
+                     name = c("Place formerly known as the Air Canada Centre",
+                              "Place really known as SkyDome",
+                              "Only Reds I can tolerate",
+                              "The last time I watched the Leafs"))
+
+maps_sports <- maps %>%
+        addMarkers(lat = arenas$lat, lng = arenas$lng,
+                   popup = arenas$name)
