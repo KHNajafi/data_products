@@ -1,0 +1,44 @@
+---
+title: "Assignment - RMarkdown & Leaflet"
+author: "Khalil H Najafi"
+date: "25/07/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## July 25, 2019
+
+An example using `Leaflet` is inspired by the recent NBA Championship won by the **Toronto Raptors**, which is where I call home, with a special appearance by superfan Drake!^[image source: <https://freepngimg.com/download/drake/10-2-drake-png-file.png>]
+
+```{r raptors}
+require(leaflet)
+
+# Initialize a basic map
+maps <- leaflet() %>%
+        addTiles()
+
+# data.frame containing the data points for our point of interest
+raptors <- data.frame(lat = c(43.64348),
+                     lng = c(-79.37869),
+                     name = c("Home of 2019 NBA Champs <a href='https://www.nba.com/raptors/'>Toronto Raptors</a>"))
+
+# Superfan special appearance!
+icon_drizzy <- makeIcon(
+        iconUrl = "https://freepngimg.com/download/drake/10-2-drake-png-file.png",
+        iconWidth = 301,
+        iconHeight = 301,
+        iconAnchorX = 300/2,
+        iconAnchorY = 16)
+
+#VIS - Map
+maps_raps <- maps %>%
+        addMarkers(lat = raptors$lat,
+                   lng = raptors$lng,
+                   icon = icon_drizzy,
+                   popup = raptors$name)
+
+maps_raps
+```
