@@ -126,7 +126,48 @@ arenas <- data.frame(lat = c(43.64348,
                               "Place really known as SkyDome",
                               "Only Reds I can tolerate",
                               "The last time I watched the Leafs"))
-
+#VIS - Map
 maps_sports <- maps %>%
-        addMarkers(lat = arenas$lat, lng = arenas$lng,
+        addMarkers(lat = arenas$lat,
+                   lng = arenas$lng,
                    popup = arenas$name)
+
+#custom markers
+icon_sports <- makeIcon(
+        iconUrl = "https://freepngimg.com/download/drake/10-2-drake-png-file.png",
+        iconWidth = 80,
+        iconHeight = 81,
+        iconAnchorX = 80/2,
+        iconAnchorY = 16)
+#red maple leaf icon:
+#https://cdn4.iconfinder.com/data/icons/flat-simple-canada/512/canada-02-512.png
+
+#add hyperlinks to popup
+arenas <- arenas %>%
+        mutate(name_url = c("Place formerly known as the <a href='http://scotiabankarena.com'>Air Canada Centre</a>",
+                         "Place really known as <a href='http://www.mlb.com/bluejays/ballpark'>SkyDome</a>",
+                         "Only <a href='https://bmofield.com'>Reds</a> I can tolerate",
+                         "The last time I watched the <a href='www.mattamyathleticcentre.ca/venue-info/arena-highlights-history'>Leafs</a>"))
+
+#VIS - Map with Custom Icon & Links
+maps_sports <- maps %>%
+        addMarkers(lat = arenas$lat,
+                   lng = arenas$lng,
+                   icon = icon_sports,
+                   popup = arenas$name_url)
+
+#shapes on maps
+arenas <- arenas %>%
+        mutate(capacity = c(19800,
+                            53506,
+                            30000,
+                            3850))
+
+maps_sports %>%
+        addCircles(weight = 1,
+                   lat = arenas$lat,
+                   lng = arenas$lng,
+                   radius = sqrt(arenas$capacity) * 3,
+                   popup = paste(arenas$name, ";<br>Capacity: ", arenas$capacity))
+
+
