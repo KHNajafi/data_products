@@ -1,0 +1,39 @@
+---
+title: "Decks in R feat. Plotly"
+author: "Khalil H Najafi"
+date: "01/08/2019"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Context - Highrises
+
+In Toronto, as is the case in many urban cities, living in a highrise (or as my 6 year old says "living in a box in the sky") is a common situation for many families.  With larger populations, it is infeasible to distribute people horizontally while still maintaining proximity to the city centre, and therefore highrises provide housing in prime locations by distributing living spaces vertically.  They allow the same proximities to various areas of the city core, with modest but adequate space, at a relatively inexpensive price range.  
+![](toronto-skyline-graphic.png)
+
+
+
+## Context - Highrise Safety
+
+Relative to traditional housing -- think of the classic single family home with a driveway, small yard, and picket fence -- there are a unique set of features when living in a highrise.  Consider things like privacy as your neighbours are typically on the other side of a wall, ceiling, floor, or likely all three.  There are also more important factors that imply risk to safety such as flooding or more seriously, fires.
+
+
+
+![](toronto-skyline-graphic.png)
+
+
+## Slide with R Output
+
+```{r cars, echo = TRUE}
+summary(cars)
+```
+
+## Slide with Plot
+
+```{r pressure}
+plot(pressure)
+```
+
