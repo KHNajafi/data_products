@@ -171,3 +171,39 @@ maps_sports %>%
                    popup = paste(arenas$name, ";<br>Capacity: ", arenas$capacity))
 
 
+
+
+#### Toronto Open Data Snippet ####
+
+#### >>>> Dataset Download - API Method ####
+## The following was implemented directly from https://open.toronto.ca
+
+require(httr)
+
+# Get the dataset metadata by passing package_id to the package_search endpoint
+# For example, to retrieve the metadata for this dataset:
+
+response <- GET("https://ckan0.cf.opendata.inter.prod-toronto.ca/api/3/action/package_show", query=list("id"="f816b362-778a-4480-b9ed-9b240e0fe9c2"))
+package <- content(response, "parsed")
+print(package)
+
+# Get the data by passing the resource_id to the datastore_search endpoint
+# See https://docs.ckan.org/en/latest/maintaining/datastore.html for detailed parameters options
+# For example, to retrieve the data content for the first resource in the datastore:
+
+for (resource in package$result$resources) {
+        if (resource$datastore_active){
+                r <- GET("https://ckan0.cf.opendata.inter.prod-toronto.ca/api/3/action/datastore_search", query=list("id"=resource$id))
+                data <- content(r, "parsed")
+                print(data)
+                break
+        }
+}
+
+
+
+
+#### +-------> Highrise Fire Inspections ####
+
+# Upload dataset from file (.csv)
+dat_fire <- fread("/Users/khnajafi/Downloads/Highrise Inspections Data.csv")
