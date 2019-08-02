@@ -207,3 +207,68 @@ for (resource in package$result$resources) {
 
 # Upload dataset from file (.csv)
 dat_fire <- fread("/Users/khnajafi/Downloads/Highrise Inspections Data.csv")
+
+#variable transformation
+dat_fire <- dat_fire %>%
+        mutate(inspections.OpenedDate = ymd_hms(inspections.OpenedDate),
+               Inspections.ClosedDate = ymd_hms(Inspections.ClosedDate),
+               propertyAddress = as.factor(propertyAddress),
+               propertyWard = as.factor(propertyWard))
+
+## How do the number of inspections look over the time scale of the dataset?
+## Are they steady, increasing, or decreasing?
+
+dat_fire_monthly <- dat_fire %>%
+        mutate(year = year(inspections.OpenedDate),
+               month = month(inspections.OpenedDate)) %>%
+        group_by(year, month) %>%
+        tally() %>%
+        group_by(year, month) %>%
+        mutate(date = paste(c(year, month, "1"), collapse = "-"),
+               date = ymd(date)) %>%
+        select(year, month, date, n)
+
+vis1 <- plot_ly(dat_fire_monthly,
+                x = ~date,
+                y = ~n,
+                linetype = "dash") %>%
+        layout(title = "Highrise Fire Safety Inspections Monthly",
+               xaxis = list(title = "Date"),
+               yaxis = list(title = "Total Monthly Inspections"))
+
+plot_ly(as.data.frame(dat_fire_monthly), x = ~date, y = ~n, type = "scatter", mode = "lines")
+
+
+## How do inspections look by ward?
+## Are they typically clear?
+
+dat_fire_ward <- dat_fire %>%
+        mutate(inspections.IsClear = violations.violationFireCode == "",
+               inspections.Value = ifelse(inspections.IsClear == T, 1, -1)) %>%
+        group_by(propertyWard, inspections.IsClear) %>%
+        summarise(value = sum(inspections.Value)) %>%
+        group_by(propertyWard, inspections.IsClear) %>%
+        mutate(text = ifelse(inspections.IsClear == T,
+                             paste(c("Ward",
+                                     propertyWard,
+                                     "Clear Inspections:",
+                                     value), collapse = " "),
+                             paste(c("Ward",
+                                     propertyWard,
+                                     "Inspections with Violations:",
+                                     abs(value)), collapse = " ")))
+
+plot_ly(as.data.frame(dat_fire_ward),
+        x = ~propertyWard,
+        y = ~value,
+        type = "bar",
+        text = ~text,
+        color = ~inspections.IsClear,
+        colors = c("#ED3600", "#5CB85C")) %>%
+        layout(showlegend = F,
+               xaxis = list(title = "Ward Number"),
+               yaxis = list(title = "Number of Inspections"))
+
+
+
+
