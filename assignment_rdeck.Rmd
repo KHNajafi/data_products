@@ -1,39 +1,123 @@
 ---
-title: "Decks in R feat. Plotly"
+title: "Decks in R"
+subtitle: "featuring Plotly"
 author: "Khalil H Najafi"
 date: "01/08/2019"
-output: ioslides_presentation
+output: 
+        ioslides_presentation:
+                logo: citytoronto.png 
+                widescreen: true
+                smaller: true
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
+library(data.table)
+library(dplyr)
+library(lubridate)
+library(plotly)
+library(DT)
+dat_fire <- fread("./Highrise Inspections Data.csv")
+dat_fire <- dat_fire %>%
+        mutate(inspections.OpenedDate = ymd_hms(inspections.OpenedDate),
+               Inspections.ClosedDate = ymd_hms(Inspections.ClosedDate),
+               propertyAddress = as.factor(propertyAddress),
+               propertyWard = as.factor(propertyWard))
 ```
 
-## Context - Highrises
+
+## Context
+### _What are Highrises?_
 
 In Toronto, as is the case in many urban cities, living in a highrise (or as my 6 year old says "living in a box in the sky") is a common situation for many families.  With larger populations, it is infeasible to distribute people horizontally while still maintaining proximity to the city centre, and therefore highrises provide housing in prime locations by distributing living spaces vertically.  They allow the same proximities to various areas of the city core, with modest but adequate space, at a relatively inexpensive price range.  
 ![](toronto-skyline-graphic.png)
 
 
+## Context 
+### _Our Focal Topic of Highrises: Fire Safety_
 
-## Context - Highrise Safety
-
-Relative to traditional housing -- think of the classic single family home with a driveway, small yard, and picket fence -- there are a unique set of features when living in a highrise.  Consider things like privacy as your neighbours are typically on the other side of a wall, ceiling, floor, or likely all three.  There are also more important factors that imply risk to safety such as flooding or more seriously, fires.
+Relative to traditional housing (think of the classic single family home with a driveway, small yard, and picket fence) there are a unique set of features when living in a highrise.  Consider things like privacy as your neighbours are typically on the other side of a wall, ceiling, floor -- or likely all three.  There are also more important factors that imply risk to safety such as flooding or detrimentally more serious, fires.
 
 
 
 ![](toronto-skyline-graphic.png)
 
 
-## Slide with R Output
+## The Dataset
+### _Highrise Residential Fire Inspection -- City of Toronto_
 
-```{r cars, echo = TRUE}
-summary(cars)
+Through the [Open Data program of the City of Toronto](https://open.toronto.ca/), a dataset on fire inspection details is available, refreshed daily, containing data on inspections including any violations, open/close dates of inspections, and the address including ward.  A snippet of the dataset:
+
+```{r dataset preview}
+head(as.tbl(dat_fire), 3)
 ```
 
-## Slide with Plot
+## The Visualizations
+### _What that vis is?_
 
-```{r pressure}
-plot(pressure)
+For brevity, we'll focus our analysis on the following two questions:
+
+1. How do the number of inspections look over the time scale of the dataset? Are they steady, increasing, or decreasing?
+1. How do inspections look by ward? Are there certain wards with many/few inspections? Are the inspections typically clear or are there violations?
+
+There are some basic transformations to the data required for the visualizations, but we leave them contained in the RMarkdown document and not on this deck : )
+
+## The Visualizations
+
+Monthly Inspections over Time
+
+```{r inspections over time, warning = F}
+dat_fire_monthly <- dat_fire %>% 
+        mutate(year = year(inspections.OpenedDate),
+               month = month(inspections.OpenedDate)) %>%
+        group_by(year, month) %>%
+        tally() %>% 
+        group_by(year, month) %>% 
+        mutate(date = paste(c(year, month, "1"), collapse = "-"), 
+               date = ymd(date)) %>%
+        select(year, month, date, n)
+
+plot_ly(as.data.frame(dat_fire_monthly),
+        x = ~date,
+        y = ~n,
+        type = "scatter",
+        mode = "lines",
+        width = 950) %>%
+        layout(xaxis = list(title = "Date"),
+               yaxis = list(title = "Total Monthly Inspections"))
+```
+
+## The Visualizations
+
+Inspections by Ward, Clear v. Violations
+
+```{r inspections by ward, warning = F}
+dat_fire_ward <- dat_fire %>%
+        mutate(inspections.IsClear = violations.violationFireCode == "",
+               inspections.Value = ifelse(inspections.IsClear == T, 1, -1)) %>%
+        group_by(propertyWard, inspections.IsClear) %>%
+        summarise(value = sum(inspections.Value)) %>%
+        group_by(propertyWard, inspections.IsClear) %>%
+        mutate(text = ifelse(inspections.IsClear == T,
+                             paste(c("Ward",
+                                     propertyWard,
+                                     "Clear Inspections:",
+                                     value), collapse = " "),
+                             paste(c("Ward",
+                                     propertyWard,
+                                     "Inspections with Violations:",
+                                     abs(value)), collapse = " ")))
+
+plot_ly(as.data.frame(dat_fire_ward),
+        x = ~propertyWard,
+        y = ~value,
+        type = "bar",
+        text = ~text,
+        color = ~inspections.IsClear,
+        colors = c("#ED3600", "#5CB85C"),
+        width = 950) %>%
+        layout(showlegend = F,
+               xaxis = list(title = "Ward Number"),
+               yaxis = list(title = "Number of Inspections"))
 ```
 
