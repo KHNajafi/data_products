@@ -271,4 +271,320 @@ plot_ly(as.data.frame(dat_fire_ward),
 
 
 
+#### Assignment - Shiny App w/ Pitch Deck ####
+## For this assignment continuing with Toronto's Open Data
+## Shiny app:
+##      will highlight shelter occupancy for YTD 2019
+##      by "sector" (families, mens, womens)
+## Pitch deck:
+##      5 slides in slidify or Rstudio presenter
+##      hosted on GitHub pages or Rpubs
+##      link to Shiny app
+##      contain some R code to be executed upon knitting
+
+
+#### >> Shiny App ####
+
+#### >>>>> Dataset Creation ####
+#### +-------> Raw Dataset Download (URL Method) ####
+
+require(jsonlite)
+url_dataset <- "https://ckan0.cf.opendata.inter.prod-toronto.ca/download_resource/e4cdcaff-7c06-488a-a072-4880fbd84b88"
+dat_shelter_raw <- fromJSON(url_dataset, simplifyDataFrame = T)
+
+
+#### +-------> Shelter Address & Coordinates ####
+shelter_address <- dat_shelter_raw %>%
+        distinct(FACILITY_NAME)
+
+shelter_latlong <- data.frame(latitude = c("43.77076",
+                                           "43.77076",
+                                    "43.77030",
+                                    "43.65789",
+                                    "43.66586",
+                                    "43.66586",
+                                    "43.66517",
+                                    "43.76860",
+                                    "43.76860",
+                                    "43.76860",
+                                    "43.74247",
+                                    "43.76074",
+                                    "43.76074",
+                                    "43.76074",
+                                    "43.72786",
+                                    "43.76074",
+                                    "43.64182",
+                                    "43.64182",
+                                    "43.66048",
+                                    "43.69159",
+                                    "43.65970",
+                                    "43.65970",
+                                    "43.64874",
+                                    "43.66155",
+                                    "43.64792",
+                                    "43.65185",
+                                    "43.69192",
+                                    "43.65950",
+                                    "43.65994",
+                                    "43.68911",
+                                    "43.65983",
+                                    "43.64649",
+                                    "43.76334",
+                                    "43.77280",
+                                    "43.65021",
+                                    "43.66719",
+                                    "43.66763",
+                                    "43.65910",
+                                    "43.65208",
+                                    "43.71563",
+                                    NA,
+                                    "43.65618",
+                                    "43.72784",
+                                    "43.65838",
+                                    "43.71729",
+                                    "43.64086",
+                                    "43.68920",
+                                    "43.69077",
+                                    "43.68145",
+                                    "43.68187",
+                                    "43.65831",
+                                    "43.66254",
+                                    "43.61795",
+                                    "43.65998",
+                                    "43.79812",
+                                    "43.67208",
+                                    "43.65929",
+                                    "43.65453",
+                                    "43.65453",
+                                    "43.65453",
+                                    "43.66554",
+                                    "43.64649",
+                                    "43.65221",
+                                    "43.65518",
+                                    "43.66202",
+                                    "43.73920",
+                                    "43.73920",
+                                    "43.65864",
+                                    "43.67350",
+                                    "43.67350",
+                                    "43.66581",
+                                    "43.65201",
+                                    "43.67237",
+                                    "43.64879",
+                                    "43.66791",
+                                    "43.68466",
+                                    "43.68466",
+                                    "43.73630",
+                                    "43.73630",
+                                    "43.65185",
+                                    "43.67530",
+                                    "43.67530",
+                                    NA,
+                                    NA,
+                                    NA,
+                                    NA,
+                                    NA,
+                                    NA,
+                                    NA,
+                                    NA,
+                                    NA,
+                                    NA,
+                                    NA,
+                                    NA,
+                                    NA,
+                                    NA,
+                                    NA,
+                                    NA,
+                                    NA,
+                                    "43.63673",
+                                    "43.63673",
+                                    "43.73420",
+                                    "43.71752",
+                                    "43.63673"),
+                       longitude = c("-79.33630",
+                                     "-79.33630",
+                                     "-79.32300",
+                                     "-79.40709",
+                                     "-79.44592",
+                                     "-79.44592",
+                                     "-79.41886",
+                                     "-79.26737",
+                                     "-79.26737",
+                                     "-79.26737",
+                                     "-79.49655",
+                                     "-79.19677",
+                                     "-79.19677",
+                                     "-79.19677",
+                                     "-79.22889",
+                                     "-79.19677",
+                                     "-79.40197",
+                                     "-79.40197",
+                                     "-79.37171",
+                                     "-79.26423",
+                                     "-79.37432",
+                                     "-79.37432",
+                                     "-79.39314",
+                                     "-79.37880",
+                                     "-79.41147",
+                                     "-79.40363",
+                                     "-79.43987",
+                                     "-79.38144",
+                                     "-79.38127",
+                                     "-79.29815",
+                                     "-79.37427",
+                                     "-79.39824",
+                                     "-79.36092",
+                                     "-79.41475",
+                                     "-79.40167",
+                                     "-79.37484",
+                                     "-79.37925",
+                                     "-79.36817",
+                                     "-79.37435",
+                                     "-79.46741",
+                                     NA,
+                                     "-79.36248",
+                                     "-79.26629",
+                                     "-79.44324",
+                                     "-79.25874",
+                                     "-79.41024",
+                                     "-79.46211",
+                                     "-79.34950",
+                                     "-79.41820",
+                                     "-79.41870",
+                                     "-79.40866",
+                                     "-79.33820",
+                                     "-79.49736",
+                                     "-79.37838",
+                                     "-79.39510",
+                                     "-79.37373",
+                                     "-79.37273",
+                                     "-79.36685",
+                                     "-79.36685",
+                                     "-79.36685",
+                                     "-79.46313",
+                                     "-79.40630",
+                                     "-79.37252",
+                                     "-79.36922",
+                                     "-79.32949",
+                                     "-79.56568",
+                                     "-79.56568",
+                                     "-79.40079",
+                                     "-79.40638",
+                                     "-79.40638",
+                                     "-79.37921",
+                                     "-79.39139",
+                                     "-79.32216",
+                                     "-79.39843",
+                                     "-79.40554",
+                                     "-79.38926",
+                                     "-79.38926",
+                                     "-79.58083",
+                                     "-79.58083",
+                                     "-79.40363",
+                                     "-79.40152",
+                                     "-79.40152",
+                                     NA,
+                                     NA,
+                                     NA,
+                                     NA,
+                                     NA,
+                                     NA,
+                                     NA,
+                                     NA,
+                                     NA,
+                                     NA,
+                                     NA,
+                                     NA,
+                                     NA,
+                                     NA,
+                                     NA,
+                                     NA,
+                                     NA,
+                                     "-79.39782",
+                                     "-79.39782",
+                                     "-79.22253",
+                                     "-79.28313",
+                                     "-79.39782"))
+
+dat_shelter_coord <- cbind(shelter_address, shelter_latlong) %>%
+        # Remove facilities with missing coordinates (will be excluded)
+        filter(!is.na(latitude))
+
+
+
+
+#### +-------> Dataset Creation - Main Table ####
+dat_shelter <- dat_shelter_raw %>%
+        # Merge in lat/long coordinates for facilities
+        left_join(dat_shelter_coord) %>%
+        # Remove facilities with no coordinate data (cannot map)
+        filter(!is.na(latitude)) %>%
+        # Remove observations with 0/missing capacity
+        filter(!is.na(CAPACITY) & CAPACITY > 0) %>%
+        # Create Variables
+        #       year, month, occupancy rate
+        mutate(OCCUPANCY_DATE = ymd(OCCUPANCY_DATE),
+               occupancy_year = year(OCCUPANCY_DATE),
+               occupancy_month = month(OCCUPANCY_DATE),
+               occupancy_rate = OCCUPANCY/CAPACITY) %>%
+        select(ORGANIZATION_NAME,
+               SHELTER_NAME,
+               PROGRAM_NAME,
+               SECTOR,
+               FACILITY_NAME,
+               OCCUPANCY_DATE,
+               CAPACITY,
+               OCCUPANCY,
+               occupancy_rate,
+               latitude,
+               longitude,
+               SHELTER_ADDRESS,
+               SHELTER_CITY,
+               SHELTER_POSTAL_CODE,
+               SHELTER_PROVINCE,
+               occupancy_year,
+               occupancy_month) %>%
+        arrange(OCCUPANCY_DATE)
+
+
+
+
+#### +-------> Dataset Creation - Monthly Summary Table ####
+dat_shelter_mth <- dat_shelter %>%
+        # Summarise by Facility, Year, Month
+        group_by(SHELTER_NAME,
+                 SECTOR,
+                 FACILITY_NAME,
+                 latitude,
+                 longitude,
+                 occupancy_year,
+                 occupancy_month) %>%
+        summarise(capacity_mean = mean(CAPACITY),
+                  occupancy_rate_mean = mean(occupancy_rate)) %>%
+        select(SHELTER_NAME,
+               SECTOR,
+               FACILITY_NAME,
+               occupancy_year,
+               occupancy_month,
+               capacity_mean,
+               occupancy_rate_mean,
+               latitude,
+               longitude)
+
+
+## Export Datasets
+
+write.table(dat_shelter,
+            "./assignment_shiny_rdeck/dataset_toronto-shelter-20190806.csv",
+            sep = ",",
+            row.names = F)
+
+write.table(dat_shelter_mth,
+            "./assignment_shiny_rdeck/dataset_toronto-shelter-monthly-20190806.csv",
+            sep = ",",
+            row.names = F)
+
+
+
+
 
