@@ -1,0 +1,56 @@
+---
+title: "Approximating Central Area from Multiple Addresses"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = T)
+libraries <- c("data.table", "tidyverse", "lubridate", "leaflet")
+lapply(libraries, require, character.only = T)
+```
+
+## Scroll Down Innit
+
+
+```{r map innit}
+#datatable
+coord <- data.frame(name = c("American Chutiya Chaamp Panchod Lund",
+                             "Chutiya Chaamp Panchod Lund",
+                             "Nandos Panchod Ben ki Bundi",
+                             "Opioid Pandamic Panchod ki Pendu",
+                             "Me"),
+                    lat = c(43.9398,
+                            43.89892,
+                            43.76061,
+                            43.92319,
+                            43.76966),
+                    long = c(-78.8734,
+                             -79.22495,
+                             -79.39854,
+                             -79.45457,
+                             -79.37008))
+
+x1 <- min(coord$lat) %% 1
+x2 <- max(coord$lat) %% 1
+
+y2 <- max(abs(coord$long)) %% 1
+
+central.lat <- min(coord$lat) + (x1 + ((x2 - x1)/2))
+central.long <- abs(floor(max(coord$long))) + ((y2)/2) 
+
+restaurants_near <- paste0("https://www.google.ca/maps/search/Restaurants/@",
+                           43.87021, ",",
+                           -79.22728, 
+                           ",13z")
+
+#map
+leaflet(coord) %>%
+        addProviderTiles(providers$CartoDB.Positron) %>%
+        addMarkers(lat = ~lat,
+                   lng = ~long,
+                   popup = ~name) %>%
+        addCircles(weight = 1,
+                   radius = 5e3,
+                   lat = 43.87021,
+                   lng = -79.22728,
+                   popup = "THIS IS ABOUT CENTRAL<br>NOW FIND A VENUE <a href='https://www.google.ca/maps/search/Restaurants/@43.87021,-79.22728,13z'>HERE</a> INNIT")
