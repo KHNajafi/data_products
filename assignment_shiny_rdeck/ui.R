@@ -12,9 +12,12 @@
 
 ###### FUNCTIONS & WORKSPACE ######
 # REQUIRED LIBRARIES
-libraries <- c("shiny", "data.table", "tidyverse", "lubridate", "leaflet")
-lapply(libraries, require, character.only = T)
-rm(libraries)
+library("shiny")
+library("tidyverse")
+library("data.table")
+library("lubridate")
+library("leaflet")
+library("directlabels")
 
 
 # # # # # # # # # #
@@ -22,8 +25,18 @@ rm(libraries)
 
 ###### DATASETS ######
 dat_shelter <- fread("./dataset_toronto-shelter-20190806.csv")
-
 dat_shelter_mth <- fread("./dataset_toronto-shelter-monthly-20190806.csv")
+
+## Variable Types
+dat_shelter <- dat_shelter %>%
+    mutate(OCCUPANCY_DATE = ymd(OCCUPANCY_DATE),
+           latitude = as.numeric(latitude),
+           longitude = as.numeric(longitude))
+
+dat_shelter_mth <- dat_shelter_mth %>%
+    mutate(latitude = as.numeric(latitude),
+           longitude = as.numeric(longitude)) %>%
+    arrange(desc(capacity_mean))
 
 
 # # # # # # # # # #
@@ -34,7 +47,8 @@ txt_header <- p(br(),
                 "How does occupancy in city shelters compare through the year?",
                 br(),
                 "Select a date to see occupancy across shelters.",
-                "The radius reflects capacity and optionally you can filter by sector.")
+                "The radius reflects average monthly capacity",
+                "and optionally you can filter by group.")
 
 txt_about <- p(br(),
                "Homelessness is a byproduct of socioeconomic systems, ",
@@ -65,7 +79,7 @@ txt_about <- p(br(),
 shinyUI(fluidPage(
 
     # Application title
-    titlePanel("Toronto Shelter Capacities"),
+    titlePanel("Toronto — An Exploration of Homelessness in the City"),
     h6("Khalil H Najafi | www.khnajafi.me"),
 
 
@@ -76,9 +90,9 @@ shinyUI(fluidPage(
             # Date Input: select the month
             dateInput("date",
                       "Select Date:",
-                      value = "2019-03-01",
-                      min = "2019-01-01",
-                      max = "2019-08-06"),
+                      value = "2019-04-26",
+                      min = min(dat_shelter$OCCUPANCY_DATE),
+                      max = max(dat_shelter$OCCUPANCY_DATE)),
 
 
             # Sector Input: select the sectors to display
@@ -89,15 +103,8 @@ shinyUI(fluidPage(
                                            "Men",
                                            "Women",
                                            "Youth"),
-                               selected = c("Families")),
-
-
-            sliderInput("bins",
-                        "Number of bins:",
-                        min = 1,
-                        max = 50,
-                        value = 30)
-        ),
+                               selected = c("Families"))
+            ),
 
 
         # Main display: tabs with preamble and main analytics
@@ -109,9 +116,23 @@ shinyUI(fluidPage(
                                  txt_about
                                  ),
 
-                        tabPanel("Shelter Analytics",
+                        tabPanel("Shelter Occupancy",
                                  txt_header,
-                                 plotOutput("distPlot")))
+
+                                 h4("Map of Shelters & Capacities"),
+                                 htmlOutput("map_header"),
+                                 ## Shelter Occupancy Map
+                                 leafletOutput("map_shelters"),
+
+                                 hr(),
+
+                                 ## Occupancy Summary Text
+                                 htmlOutput("text_summary"),
+                                 br(),
+
+                                 ## Occupancy Time Series
+                                 h4("Facility Occupancy by Day"),
+                                 plotOutput("facility_occupancy")))
         )
     )
 ))
