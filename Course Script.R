@@ -587,4 +587,149 @@ write.table(dat_shelter_mth,
 
 
 
+#### >>>>> Map Code ####
+
+dat <- dat_shelter_mth %>%
+        filter(occupancy_month == 3) %>%
+        arrange(desc(capacity_mean))
+
+dates <- ymd(paste0("2019-", unique(dat$occupancy_month), "-01"))
+
+## Colour Palette
+sector_pal <- colorFactor(c("#b3e2cd", "#fdcdac", "#cbd5e8", "#f4cae4"),
+                          dat$SECTOR)
+
+leaflet(dat) %>%
+        # addTiles() %>%
+        addProviderTiles(providers$CartoDB.Positron) %>%
+        addCircles(weight = 3,
+                   lat = ~latitude,
+                   lng = ~longitude,
+                   radius = ~sqrt(capacity_mean) * 100,
+                   color = ~sector_pal(SECTOR),
+                   opacity = 1,
+                   fillOpacity = 0.05,
+                   popup = paste0(dat$FACILITY_NAME,
+                                 "<br>Sector: ",
+                                 dat$SECTOR,
+                                 "<br>",
+                                 lubridate::month(dates, label = T, abbr = F),
+                                 ", Avg Capacity [Avg Occupancy]:",
+                                 "<br>",
+                                 round(dat$capacity_mean),
+                                 " [",
+                                 round(dat$occupancy_rate_mean * 100, 1),
+                                 "%]")) %>%
+        addLegend("bottomright",
+                  pal = sector_pal,
+                  values = ~SECTOR,
+                  title = "Groups",
+                  opacity = 1)
+
+
+
+
+#### >>>>> Graph Vis Code ####
+dat <- dat_shelter %>%
+        filter(occupancy_month == 4,
+               SECTOR == "Families")
+dat2 <- dat_shelter %>%
+        filter(occupancy_month == 4,
+               SECTOR %in% c("Women", "Families")) %>%
+        # Weekend indicator for visualization
+        mutate(weekend = weekdays(OCCUPANCY_DATE) %in% c("Saturday", "Sunday"))
+
+## Number of lines
+reps <- length(unique(dat2$FACILITY_NAME))
+sec <- length(unique(dat2$SECTOR))
+
+## Colours Based on Groups Selected
+if (length(sec) == 1) {
+        colour <- c("#cbd5e8")
+
+}
+
+if (length(sec) == 2) {
+        colour <- c("#b3e2cd", "#e6f5c9")
+
+}
+
+if (length(sec) == 3) {
+        colour <- c("#b3e2cd", "#cbd5e8", "#e6f5c9")
+
+}
+
+if (length(sec) == 4) {
+        colour <- c("#b3e2cd", "#fdcdac", "#f4cae4", "#e6f5c9")
+
+}
+
+if (length(sec) == 5) {
+        colour <- c("#b3e2cd", "#fdcdac", "#cbd5e8", "#f4cae4", "#e6f5c9")
+
+}
+
+
+ggplot(dat2, aes(OCCUPANCY_DATE, occupancy_rate)) +
+        ## Adding shaded areas for weekends
+        geom_area(aes(y = weekend/100 * max(occupancy_rate)),
+                  fill = "grey", alpha = 1/3) +
+
+        # Shaded area for >100% occupancy
+        annotate("rect",
+                 xmin = min(dat2$OCCUPANCY_DATE), xmax = max(dat2$OCCUPANCY_DATE),
+                 ymin = 1, ymax = max(dat2$occupancy_rate) + 0.1,
+                 fill = "red", alpha = 1/20) +
+
+        geom_line(aes(linetype = FACILITY_NAME, colour = SECTOR)) +
+        # geom_line(aes(colour = SECTOR)) +
+        geom_point(size = 1, aes(colour = SECTOR)) +
+        geom_dl(aes(label = FACILITY_NAME,
+                    color = SECTOR),
+                # cex = 0.4,
+                method = list(cex = 0.7, "top.bumpup")) +
+        scale_linetype_manual(values = rep("solid", reps),
+                              guide = "none") +
+        scale_colour_manual(values = colour) +
+        # scale_y_continuous(labels = scales::percent) +
+        theme_bw() +
+        theme(legend.position = "top") +
+        labs(x = "",
+             y = "Occupancy",
+             colour = "",
+             linetype = "Facility")
+
+
+## Creating function for colour selector logic
+
+colour_pal <- function(sector_length = 1) {
+        if (sector_length == 1) {
+                return(c("#cbd5e8"))
+
+        }
+
+        if (sector_length == 2) {
+                return(c("#b3e2cd", "#e6f5c9"))
+
+        }
+
+        if (sector_length == 3) {
+                return(c("#b3e2cd", "#cbd5e8", "#e6f5c9"))
+
+        }
+
+        if (sector_length == 4) {
+                return(c("#b3e2cd", "#fdcdac", "#f4cae4", "#e6f5c9"))
+
+        }
+
+        if (sector_length == 5) {
+                return(c("#b3e2cd", "#fdcdac", "#cbd5e8", "#f4cae4", "#e6f5c9"))
+
+        }
+}
+
+
+
+
 
