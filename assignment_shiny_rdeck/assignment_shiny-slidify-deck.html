@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Visualizing Homelessness in Toronto</title>
+  <meta charset="utf-8">
+  <meta name="description" content="Visualizing Homelessness in Toronto">
+  <meta name="author" content="Khalil H Najafi">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="libraries/highlighters/revealjs/css/tomorrow.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->  <link rel=stylesheet href="./assets/css/ribbons.css"></link>
+
+  
+  <!-- Grab CDN jQuery, fall back to local if offline -->
+  <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+  <script>window.jQuery || document.write('<script src="libraries/widgets/quiz/js/jquery.js"><\/script>')</script> 
+  <script data-main="libraries/frameworks/io2012/js/slides" 
+    src="libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+  
+
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+        <slide class="title-slide segue nobackground">
+  <aside class="gdbar">
+    <img src="assets/img/citytoronto.png">
+  </aside>
+  <hgroup class="auto-fadein">
+    <h1>Visualizing Homelessness in Toronto</h1>
+    <h2>Shelter Capacity &amp; Occupancy in 2019</h2>
+    <p>Khalil H Najafi<br/>Data Scientist</p>
+  </hgroup>
+  <article></article>  
+</slide>
+    
+
+    <!-- SLIDES -->
+    <slide class="" id="slide-1" style="background:;">
+  <hgroup>
+    <h2>A Preamble .. Data Science for Humanity</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Modern transit, advanced economies, diversity, world class education and services are all part of modern city life around the developed world (like in my home city of Toronto).  However <strong>homelessness</strong> and <strong>marginalization</strong> are also real features, and often we don&#39;t know much about it except for maybe some brief observations during our daily lives to work, school, and around.  Does homelessness affect only a small portion of a very specific group, like only adult men? What are the services that are provided to groups affected? Where are these services offered?</p>
+
+<p>This app is modern visualization applied to something outside of business or tech, and represents data science&#39;s potential to positively impact humanity at large; especially those who are not typically beneficiaries of cutting edge technology</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="segue" id="slide-2" style="background:#cbd5e8;">
+  <hgroup>
+    <h1>&quot;To meet increasing demand for shelter, the City has been adding beds to...over 2,800 more beds than were available November 1, 2016&quot;      (City of Toronto <a href="https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-census/">Report</a>)</h1>
+  </hgroup>
+  <article data-timings="">
+    
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Under-the-Hood - About the App..</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>The app is built on a dataset from the City of Toronto&#39;s <code>Open Data Program</code> <a href="https://open.toronto.ca/">online</a>.  Though the outputs are elementary, it lays a foundation for using data science to help with a solution to homelessness in Toronto and hopefully for cities around the world.</p>
+
+<p>The app is of course created in R using <code>shiny</code>, with <code>leaflet</code>, <code>ggplot2</code> and <code>directlabels</code> for the main visualizations, as well as <code>data.table</code>, <code>lubridate</code>, and <code>dplyr</code>.</p>
+
+<p>A preview of the current 2019 dataset using R code (subset of variables):</p>
+
+<pre><code>## # A tibble: 6 x 5
+##   FACILITY_NAME                   SECTOR  OCCUPANCY_DATE CAPACITY OCCUPANCY
+##   &lt;chr&gt;                           &lt;chr&gt;   &lt;chr&gt;             &lt;int&gt;     &lt;int&gt;
+## 1 COSTI  Edward Hotel (Families)  Famili… 2019-01-01          628       543
+## 2 COSTI Edward Hotel (Singles)    Co-ed   2019-01-01           13        12
+## 3 COSTI Radisson Hotel            Famili… 2019-01-01          902       757
+## 4 COSTI Reception Centre          Co-ed   2019-01-01           16        16
+## 5 Christie Ossington Men&#39;s Hostel Men     2019-01-01           82        81
+## 6 Christie Ossington South Hostel Men     2019-01-01           32        32
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="slide-4" style="background:#e6f5c9;">
+  <hgroup>
+    <h2>Check it Out!</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>See the app on Shiny&#39;s servers <a href="https://batman.shinyapps.io/toronto_shelter_occupancy/">here</a> &amp; I really would like any and all feedback : )</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+  <div class="pagination pagination-small" id='io2012-ptoc' style="display:none;">
+    <ul>
+      <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=1 title='A Preamble .. Data Science for Humanity'>
+         1
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=2 title='&quot;To meet increasing demand for shelter, the City has been adding beds to...over 2,800 more beds than were available November 1, 2016&quot;      (City of Toronto <a href="https://www.toronto.ca/city-government/data-research-maps/research-reports/housing-and-homelessness-research-and-reports/shelter-census/">Report</a>)'>
+         2
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=3 title='Under-the-Hood - About the App..'>
+         3
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=4 title='Check it Out!'>
+         4
+      </a>
+    </li>
+  </ul>
+  </div>  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+  <!-- Load Javascripts for Widgets -->
+  
+   
+  </html>
